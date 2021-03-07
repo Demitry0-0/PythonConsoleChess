@@ -1,6 +1,6 @@
 from Pawn import Pawn
 from Bishop import Bishop
-
+import os
 
 class Board:
     def __init__(self):
@@ -43,6 +43,8 @@ class Board:
             return False
 
     def display(self):
+        os.system("cls")
+        print("\b", end='')
         for i, lst in enumerate(self.board):
             print(len(self.board) - i, *lst + ["\033[0m"])
         print(' ', end=' ')
@@ -73,7 +75,9 @@ def game():
         if board.board[frow][fcol].color != players[0]:
             print("Ход другого игрока")
             continue
-        board.board[frow][fcol].move_options()
+        if not board.board[frow][fcol].move_options():
+            print("У этой фигуры нет ходов")
+            continue
         board.display()
         while True:
             bias = board.check(input("Введите координаты хода\n"))
@@ -81,7 +85,9 @@ def game():
                 print("Координаты введены не верно")
                 continue
             mrow, mcol = board.coords
-            board.board[frow][fcol].move((mrow, mcol))
+            if not board.board[frow][fcol].move((mrow, mcol)):
+                print("Фигура туда пойти не может")
+                continue
             break
         board.clear()
         players.append(players.pop(0))
@@ -89,14 +95,17 @@ def game():
             board.board.reverse()
 
 
-def out(text):
-    for i in (31, 36, 37):
-        print("\033[{}m {}".format(i, text))
 
-
-import ctypes
-
-kernel32 = ctypes.windll.kernel32
-kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 if __name__ == "__main__":
+    import ctypes
+    kernel32 = ctypes.windll.kernel32
+    kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
     game()
+
+'''
+d2
+d4
+a7
+a5
+c1
+'''
