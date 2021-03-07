@@ -23,8 +23,8 @@ class Pawn:
                 if self.board.board[row][col + 1].color != self.color:
                     self.board.board[row][col + 1].option = falg = True
             if 0 <= col - 1 < len(self.board.board[0]) and self.board.board[row][col - 1] != ' ':
-                if self.board.board[row][col + 1].color != self.color:
-                    self.board.board[row][col + 1].option = flag = True
+                if self.board.board[row][col - 1].color != self.color:
+                    self.board.board[row][col - 1].option = flag = True
         return flag
 
     def check_move(self, coords):
