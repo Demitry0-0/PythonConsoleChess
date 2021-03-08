@@ -4,6 +4,7 @@ class Bishop:
         self.row, self.col = coords
         self.color = color
         self.option = False
+        self.walk = False
 
     def move_options(self):
         flag = False
@@ -26,7 +27,7 @@ class Bishop:
                 j += kc
         return flag
 
-    def move(self, coords):
+    def check_move(self, coords):
         row, col = coords
         if abs(self.row - row) != abs(self.col - col):
             return False
@@ -44,6 +45,12 @@ class Bishop:
                 break
             i += kr
             j += kc
+        return True
+
+    def move(self, coords):
+        row, col = coords
+        if not self.check_move(coords):
+            return False
         self.board.board[self.row][self.col] = ' '
         self.board.board[row][col] = self
         self.row, self.col = row, col
@@ -59,6 +66,8 @@ class Bishop:
         return -1, -1
 
     def __repr__(self):
+        if self.walk:
+            return "\033[46m!\033[0m"
         if self.option:
             return "\033[36m!"
         if self.color == "white":

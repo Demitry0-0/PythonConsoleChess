@@ -1,6 +1,8 @@
 from Pawn import Pawn
 from Bishop import Bishop
+from Rook import Rook
 import os
+
 
 class Board:
     def __init__(self):
@@ -8,11 +10,12 @@ class Board:
         self.reverse = False
         self.abcnum = ('A', 'H')
         self.coords = (0, 0)
+        self.space = "\033[36mΔ"
 
     def create_field(self):
-        return [[' '] * 8 for i in range(8)]
+        return [[' '] * 8 for _ in range(8)]
 
-    def fill(self, Pawn, Knight, Bishop, Rook, Queen, King):
+    def fill(self, pawn, Knight, Bishop, Rook, Queen, King):
         mrow, mcol = len(self.board), len(self.board[0])
         lst = [Rook, Knight, Bishop]
         lst = lst + [Queen, King] + lst[::-1]
@@ -58,13 +61,14 @@ class Board:
                 if 'Δ' in str(self.board[i][j]):
                     self.board[i][j] = ' '
                 elif self.board[i][j] != ' ':
-                    self.board[i][j].option = False
+                    self.board[i][j].walk = self.board[i][j].option = False
+
 
 
 def game():
     players = ["white", "black"]
     board = Board()
-    board.fill(Pawn=Pawn, Knight=Pawn, Bishop=Bishop, Queen=Pawn, King=Pawn, Rook=Pawn)
+    board.fill(Pawn, Knight=Pawn, Bishop=Bishop, Queen=Pawn, King=Pawn, Rook=Rook)
     while True:
         board.display()
         piece = board.check(input("Введите координаты фигуры\n"))
@@ -78,6 +82,7 @@ def game():
         if not board.board[frow][fcol].move_options():
             print("У этой фигуры нет ходов")
             continue
+        board.board[frow][fcol].walk = True
         board.display()
         while True:
             bias = board.check(input("Введите координаты хода\n"))
@@ -95,17 +100,21 @@ def game():
             board.board.reverse()
 
 
-
 if __name__ == "__main__":
     import ctypes
+
     kernel32 = ctypes.windll.kernel32
     kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
     game()
-
+    print("\033[46m*\033[0m")
 '''
-d2
-d4
-a7
-a5
-c1
+a2
+a4
+h7
+h5
+a1
+a3
+h8
+h6
+a3
 '''
