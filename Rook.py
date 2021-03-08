@@ -5,7 +5,6 @@ class Rook:
         self.color = color
         self.first = True
         self.option = False
-        self.walk = False
 
     def move_options(self):
         row, col = self.row, self.col
@@ -68,8 +67,6 @@ class Rook:
         return True
 
     def __repr__(self):
-        if self.walk:
-            return "\033[46m#\033[0m"
         if self.option:
             return "\033[36m#"
         if self.color == "white":

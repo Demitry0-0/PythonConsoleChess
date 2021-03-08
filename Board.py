@@ -61,7 +61,7 @@ class Board:
                 if 'Δ' in str(self.board[i][j]):
                     self.board[i][j] = ' '
                 elif self.board[i][j] != ' ':
-                    self.board[i][j].walk = self.board[i][j].option = False
+                    self.board[i][j].option = False
 
 
 
@@ -82,7 +82,6 @@ def game():
         if not board.board[frow][fcol].move_options():
             print("У этой фигуры нет ходов")
             continue
-        board.board[frow][fcol].walk = True
         board.display()
         while True:
             bias = board.check(input("Введите координаты хода\n"))

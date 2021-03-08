@@ -6,7 +6,6 @@ class Pawn:
         self.first = True
         self.k = -1 if not self.board.reverse and color == 'white' else 1
         self.option = False
-        self.walk = False
 
     def move_options(self):
         # Δ
@@ -51,8 +50,6 @@ class Pawn:
         return True
 
     def __repr__(self):
-        if self.walk:
-            return "\033[46m*\033[0m"
         if self.option:
             return "\033[36m*"
         if self.color == "white":

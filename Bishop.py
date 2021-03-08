@@ -4,7 +4,6 @@ class Bishop:
         self.row, self.col = coords
         self.color = color
         self.option = False
-        self.walk = False
 
     def move_options(self):
         flag = False
@@ -18,7 +17,7 @@ class Bishop:
                         self.board.board[self.row + i][self.col + j].option = flag = True
                     break
                 if self.board.board[self.row + i][self.col + j] == ' ':
-                    self.board.board[self.row + i][self.col + j] = "\033[36mΔ"
+                    self.board.board[self.row + i][self.col + j] = self.board.space
                     flag = True
                 else:
                     f = True
@@ -66,8 +65,6 @@ class Bishop:
         return -1, -1
 
     def __repr__(self):
-        if self.walk:
-            return "\033[46m!\033[0m"
         if self.option:
             return "\033[36m!"
         if self.color == "white":
