@@ -1,6 +1,9 @@
 from Pawn import Pawn
+from Knight import Knight
 from Bishop import Bishop
 from Rook import Rook
+from Queen import Queen
+from King import King
 import os
 
 
@@ -11,11 +14,12 @@ class Board:
         self.abcnum = ('A', 'H')
         self.coords = (0, 0)
         self.space = "\033[36mΔ"
+        self.comand = ''
 
     def create_field(self):
         return [[' '] * 8 for _ in range(8)]
 
-    def fill(self, pawn, Knight, Bishop, Rook, Queen, King):
+    def fill(self, Pawn, Knight, Bishop, Rook, Queen, King):
         mrow, mcol = len(self.board), len(self.board[0])
         lst = [Rook, Knight, Bishop]
         lst = lst + [Queen, King] + lst[::-1]
@@ -29,6 +33,10 @@ class Board:
 
     def check(self, coords):
         try:
+            if coords.lower() in ("exit", "replay"):
+                self.comand = coords.lower()
+            elif coords.lower() == "reverse":
+                self.reverse = not self.reverse
             row, col = sorted("".join(coords.split()), key=lambda x: ord(x))
             if not col.isalpha() or not row.isdigit():
                 return False
@@ -58,45 +66,69 @@ class Board:
     def clear(self):
         for i in range(len(self.board)):
             for j in range(len(self.board[i])):
-                if 'Δ' in str(self.board[i][j]):
+                if self.space == self.board[i][j]:
                     self.board[i][j] = ' '
                 elif self.board[i][j] != ' ':
                     self.board[i][j].option = False
 
 
-
 def game():
     players = ["white", "black"]
     board = Board()
-    board.fill(Pawn, Knight=Pawn, Bishop=Bishop, Queen=Pawn, King=Pawn, Rook=Rook)
+    board.fill(Pawn=Pawn, Knight=Knight, Rook=Rook, Bishop=Bishop, Queen=Queen, King=King)
+    kings = {"black": board.board[0][4], "white": board.board[7][4]}
+    flag = True
+    error = ''
     while True:
-        board.display()
-        piece = board.check(input("Введите координаты фигуры\n"))
-        if not piece:
-            print("Координаты фигуры введены не верно")
-            continue
+        if flag:
+            board.display()
+            print(error)
+            piece = board.check(input("Введите координаты фигуры\n"))
+            if not piece:
+                error = "Координаты фигуры введены не верно"
+                continue
+        flag = True
         frow, fcol = board.coords
         if board.board[frow][fcol].color != players[0]:
-            print("Ход другого игрока")
+            error = "Ход другого игрока"
             continue
         if not board.board[frow][fcol].move_options():
-            print("У этой фигуры нет ходов")
+            error = "У этой фигуры нет ходов"
             continue
-        board.display()
+        error = ''
         while True:
+            board.display()
+            print(error)
             bias = board.check(input("Введите координаты хода\n"))
             if not bias:
-                print("Координаты введены не верно")
+                if board.comand == "exit":
+                    return False
+                elif board.comand == "replay":
+                    return True
+                error = "Координаты введены не верно"
                 continue
             mrow, mcol = board.coords
+            if board.board[mrow][mcol] != board.space and \
+                    board.board[frow][fcol].color == board.board[mrow][mcol].color:
+                flag = False
+                break
+            space = board.board[mrow][mcol]
             if not board.board[frow][fcol].move((mrow, mcol)):
-                print("Фигура туда пойти не может")
+                error = "Фигура туда пойти не может"
                 continue
+            if kings[players[0]].check_shah(kings[players[0]].coords):
+                error = "Короля нельзя ставить под шах"
+                board.board[mrow][mcol].move((frow, fcol))
+                board.board[mrow][mcol] = space
+                continue
+            kings[players[1]].shah = kings[players[1]].check_shah(kings[players[1]].coords)
             break
+        error = ''
         board.clear()
-        players.append(players.pop(0))
-        if board.reverse:
-            board.board.reverse()
+        if flag:
+            players.append(players.pop(0))
+            if board.reverse:
+                board.board.reverse()
 
 
 if __name__ == "__main__":
@@ -104,16 +136,5 @@ if __name__ == "__main__":
 
     kernel32 = ctypes.windll.kernel32
     kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
-    game()
-    print("\033[46m*\033[0m")
-'''
-a2
-a4
-h7
-h5
-a1
-a3
-h8
-h6
-a3
-'''
+    while game():
+        pass

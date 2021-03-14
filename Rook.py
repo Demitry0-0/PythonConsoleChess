@@ -43,17 +43,14 @@ class Rook:
             return False
         k1 = (1 if row > self.row else -1) if row != self.row else 0
         k2 = (1 if col > self.col else -1) if col != self.col else 0
-        row -= k1
-        col -= k2
-        for i in range(abs(self.row - row)):
-            for j in range(abs(self.col - col)):
+        for i in range(abs(self.row - row - k2)):
+            for j in range(abs(self.col - col - k1)):
                 if i == j == 0:
                     continue
-                print(row + i * k1, col + j * k2)
-                if self.board.board[row + i * k1][col + j * k2] != ' ' and \
-                        'Δ' not in str(self.board.board[row + i * k1][col + j * k2]):
-                    if self.board.board[row + i * k1][col + j * k2].color == self.color:
-                        return False
+                r = self.row + i * k1
+                c = self.col + j * k2
+                if self.board.board[r][c] not in (' ', self.board.space):
+                    return False
         return True
 
     def move(self, coords):
